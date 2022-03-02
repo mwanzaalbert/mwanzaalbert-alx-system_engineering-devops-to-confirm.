@@ -1,2 +1,2 @@
 #!/bin/bash
-rm A-Z* /tmp/u
+rm [[:upper:]]* /tmp/u
