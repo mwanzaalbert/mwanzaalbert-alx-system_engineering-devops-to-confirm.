@@ -1,4 +1,4 @@
-#This repository:
+This repository:
 
 		1. Was created as per the requirements towards completing the task in the ALX_holberton program.
 		2. Includes the names of the tasks done and their percentage of completion as listed below:
