@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Script that configures an Ubuntu server
 sudo cp /etc/hosts ~/hosts.old
