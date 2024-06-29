@@ -1,10 +1,4 @@
 #!/usr/bin/env bash
-# Connect to my Holberton School Ubuntu server
-
-# Define the server IP and the private key
-SERVER_IP=54.89.182.131
-PRIVATE_KEY=~/.ssh/school
-USER=ubuntu
 
 # Use ssh to connect to the server using the private key
-ssh -i $PRIVATE_KEY $USER@$SERVER_IP
+ssh -i ~/.ssh/school ubuntu@54.89.182.131
