@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Update package lists
+apt-get update -y
+
+# Install nginx
+apt-get install nginx -y
+
+# Create the index.html file with "Hello World!" content
+echo "Hello World!" > /var/www/html/index.html
+
+# Start nginx without using systemctl
+service nginx start
+
+# Ensure nginx is set to start on boot
+update-rc.d nginx defaults
+
+# Restart nginx to apply changes (not using systemctl)
+service nginx restart
+
+# Display message to indicate script has finished running
+echo "Nginx installation and configuration completed."
