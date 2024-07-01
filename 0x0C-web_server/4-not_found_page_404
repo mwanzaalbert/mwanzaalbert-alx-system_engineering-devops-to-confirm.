@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Create the custom 404 page with the required content
+echo "Ceci n'est pas une page" > /var/www/html/custom_404.html
+
+# Configure Nginx to use the custom 404 page
+sed -i '/server_name _;/a \\n\t# Custom 404 page\n\terror_page 404 /custom_404.html;\n\tlocation = /custom_404.html {\n\t\tinternal;\n\t}' /etc/nginx/sites-available/default
+
+# Restart nginx to apply changes (not using systemctl)
+service nginx restart
+
+# Display message to indicate script has finished running
+echo "Nginx custom 404 page configuration completed."
