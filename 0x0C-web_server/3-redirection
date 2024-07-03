@@ -1,26 +1,22 @@
 #!/usr/bin/env bash
+# Configures an Nginx server so that /redirect_me redirects to another page.
+# The redirection is configured as a "301 Moved Permanently"
 
-# Update package lists
-sudo apt-get update -y
+apt-get update
+apt-get install -y nginx
 
-# Install nginx
-sudo apt-get install nginx -y
+mkdir /etc/nginx/html
+touch /etc/nginx/html/index.html
+echo "Holberton School" > /etc/nginx/html/index.html
+printf %s "server {
+    listen 80;
+    listen [::]:80 default_server;
+    root   /etc/nginx/html;
+    index  index.html index.htm;
 
-# Create the index.html file with "Hello World!" content
-sudo echo "Hello World!" > /var/www/html/index.html
+    location /redirect_me {
+        return 301 http://cuberule.com/;
+    }
+}" > /etc/nginx/sites-available/default
 
-# Configure Nginx to redirect /redirect_me to another page
-# Adding redirection configuration to the default server block
-sudo sed -i '/location \/ {/a \\n\t# Redirect /redirect_me to https://www.youtube.com/watch?v=QH2-TGUlwu4\n\tlocation /redirect_me {\n\t\treturn 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n\t}\n' /etc/nginx/sites-available/default
-
-# Start nginx without using systemctl
-sudo service nginx start
-
-# Ensure nginx is set to start on boot
-sudo update-rc.d nginx defaults
-
-# Restart nginx to apply changes (not using systemctl)
-sudo service nginx restart
-
-# Display message to indicate script has finished running
-sudo echo "Nginx installation and redirection configuration completed."
+service nginx restart
