@@ -1,38 +1,54 @@
 #!/usr/bin/env bash
-#configure a custom 404 page
+# This script installs Nginx, configures a custom 404 page, and sets up a 301 redirect.
 
+# Update package list and install Nginx
 sudo apt-get update
 sudo apt-get -y install nginx
-ufw allow 'Nginx HTTP'
-chmod -R 755 /var/www
-echo 'Hello World' > /var/www/html/index.html
 
-new_config=\
-"server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
-               root /var/www/html;
-        index index.html index.htm index.nginx-debian.html;
-        server_name _;
-        location / {
-                try_files \$uri \$uri/ =404;
-        }
-        error_page 404 /404.html;
-        location  /404.html {
-            internal;
-        }
-        
-        if (\$request_filename ~ redirect_me){
-            rewrite ^ https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;
-        }
+# Allow HTTP traffic through the firewall
+sudo ufw allow 'Nginx HTTP'
+
+# Set permissions for the web root directory
+sudo chmod -R 755 /var/www
+
+# Create the default index.html with "Hello World!"
+echo 'Hello World' | sudo tee /var/www/html/index.html
+
+# Define the new Nginx server configuration
+new_config="
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name _;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+
+    error_page 404 /404.html;
+    location /404.html {
+        internal;
+    }
+
+    if (\$request_filename ~ redirect_me) {
+        rewrite ^ https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;
+    }
 }
 "
-echo "Ceci n'est pas une page" > /var/www/html/404.html
-echo "$new_config" > /etc/nginx/sites-available/default
 
-if [ "$(pgrep nginx)" -le 0 ];
-then
-    service nginx start
+# Create the custom 404 page
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+
+# Write the new configuration to the default site configuration file
+echo "$new_config" | sudo tee /etc/nginx/sites-available/default
+
+# Check if Nginx is running, and start or restart the service accordingly
+if ! pgrep nginx > /dev/null; then
+    sudo service nginx start
 else
-    service nginx restart
-fi;
+    sudo service nginx restart
+fi
