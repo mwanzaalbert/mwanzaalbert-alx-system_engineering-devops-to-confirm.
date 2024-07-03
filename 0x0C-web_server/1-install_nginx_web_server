@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# installs nginx and configure it to listen on port 80
+# installs nginx and configures it to listen on port 80 and serve "Hello World!" at its root
 
 # Update package lists
 sudo apt-get update -y
@@ -9,6 +9,23 @@ sudo apt-get install nginx -y
 
 # Create the index.html file with "Hello World!" content
 echo "Hello World!" | sudo tee /var/www/html/index.html
+
+# Update Nginx configuration to point to the /var/www/html directory
+sudo bash -c 'cat > /etc/nginx/sites-available/default << EOF
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html index.htm;
+
+    server_name _;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}
+EOF'
 
 # Start nginx without using systemctl
 sudo service nginx start
