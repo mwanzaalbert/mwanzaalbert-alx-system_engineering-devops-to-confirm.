@@ -1,61 +1,79 @@
-# This Puppet script installs and configures an Nginx server with a root page and a 301 redirect.
+# add stable version of nginx
+exec { 'add nginx stable repo':
+  command => 'sudo add-apt-repository ppa:nginx/stable',
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+}
 
-# Ensure the Nginx package is installed
+# update software packages list
+exec { 'update packages':
+  command => 'apt-get update',
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+}
+
+# install nginx
 package { 'nginx':
-  ensure => installed,
+  ensure     => 'installed',
 }
 
-# Ensure the Nginx service is running and enabled
-service { 'nginx':
-  ensure     => running,
-  enable     => true,
-  hasrestart => true,
-  require    => Package['nginx'],
+# allow HTTP
+exec { 'allow HTTP':
+  command => "ufw allow 'Nginx HTTP'",
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+  onlyif  => '! dpkg -l nginx | egrep \'îi.*nginx\' > /dev/null 2>&1',
 }
 
-# Create the root index.html with "Hello World!" content
+# change folder rights
+exec { 'chmod www folder':
+  command => 'chmod -R 755 /var/www',
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+}
+
+# create index file
 file { '/var/www/html/index.html':
-  ensure  => file,
-  content => '<html><body>Hello World!</body></html>',
-  require => Package['nginx'],
+  content => "Hello World!\n",
 }
 
-# Configure Nginx server block
-file { '/etc/nginx/sites-available/default':
-  ensure  => file,
-  content => template('nginx/default.erb'),
-  require => Package['nginx'],
-  notify  => Service['nginx'],
+# create index file
+file { '/var/www/html/404.html':
+  content => "Ceci n'est pas une page\n",
 }
 
-# Template for the Nginx default site configuration
-file { '/etc/puppetlabs/code/environments/production/modules/nginx/templates/default.erb':
+# add redirection and error page
+file { 'Nginx default config file':
   ensure  => file,
-  content => "
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-
-    root /var/www/html;
-    index index.html;
-
-    server_name _;
-
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-
-    location = /redirect_me {
-        return 301 http://\$host/;
-    }
+  path    => '/etc/nginx/sites-enabled/default',
+  content =>
+"server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+               root /var/www/html;
+        # Add index.php to the list if you are using PHP
+        index index.html index.htm index.nginx-debian.html;
+        server_name _;
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files \$uri \$uri/ =404;
+        }
+        error_page 404 /404.html;
+        location  /404.html {
+            internal;
+        }
+        
+        if (\$request_filename ~ redirect_me){
+            rewrite ^ https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;
+        }
 }
 ",
-  require => Package['nginx'],
+}
+# restart nginx
+exec { 'restart service':
+  command => 'service nginx restart',
+  path    => '/usr/bin:/usr/sbin:/bin',
 }
 
-# Ensure the default site is enabled
-exec { 'enable-nginx-default-site':
-  command     => '/usr/sbin/nginx -s reload',
-  refreshonly => true,
-  subscribe   => File['/etc/nginx/sites-available/default'],
+# start service nginx
+service { 'nginx':
+  ensure  => running,
+  require => Package['nginx'],
 }
