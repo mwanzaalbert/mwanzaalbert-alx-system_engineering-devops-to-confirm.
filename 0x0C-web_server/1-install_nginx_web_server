@@ -1,22 +1,23 @@
 #!/usr/bin/env bash
+# installs nginx and configure it to listen on port 80
 
 # Update package lists
-apt-get update -y
+sudo apt-get update -y
 
 # Install nginx
-apt-get install nginx -y
+sudo apt-get install nginx -y
 
 # Create the index.html file with "Hello World!" content
-echo "Hello World!" > /var/www/html/index.html
+echo "Hello World!" | sudo tee /var/www/html/index.html
 
 # Start nginx without using systemctl
-service nginx start
+sudo service nginx start
 
 # Ensure nginx is set to start on boot
-update-rc.d nginx defaults
+sudo update-rc.d nginx defaults
 
 # Restart nginx to apply changes (not using systemctl)
-service nginx restart
+sudo service nginx restart
 
 # Display message to indicate script has finished running
 echo "Nginx installation and configuration completed."
