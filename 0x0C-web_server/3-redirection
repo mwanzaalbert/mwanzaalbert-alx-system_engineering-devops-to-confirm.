@@ -1,26 +1,45 @@
 #!/usr/bin/env bash
+# installs nginx, configures it to listen on port 80, serve "Hello World!" at its root,
+# and sets up a 301 redirect from /redirect_me to a specified URL
 
 # Update package lists
-apt-get update -y
+sudo apt-get update -y
 
 # Install nginx
-apt-get install nginx -y
+sudo apt-get install nginx -y
 
 # Create the index.html file with "Hello World!" content
-echo "Hello World!" > /var/www/html/index.html
+echo "Hello World!" | sudo tee /var/www/html/index.html
 
-# Configure Nginx to redirect /redirect_me to another page
-# Adding redirection configuration to the default server block
-sed -i '/location \/ {/a \\n\t# Redirect /redirect_me to https://www.youtube.com/watch?v=QH2-TGUlwu4\n\tlocation /redirect_me {\n\t\treturn 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n\t}\n' /etc/nginx/sites-available/default
+# Update Nginx configuration to point to the /var/www/html directory and add redirect
+sudo bash -c 'cat > /etc/nginx/sites-available/default << EOF
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html index.htm;
+
+    server_name _;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
+}
+EOF'
 
 # Start nginx without using systemctl
-service nginx start
+sudo service nginx start
 
 # Ensure nginx is set to start on boot
-update-rc.d nginx defaults
+sudo update-rc.d nginx defaults
 
 # Restart nginx to apply changes (not using systemctl)
-service nginx restart
+sudo service nginx restart
 
 # Display message to indicate script has finished running
-echo "Nginx installation and redirection configuration completed."
+echo "Nginx installation and configuration with redirect completed."
