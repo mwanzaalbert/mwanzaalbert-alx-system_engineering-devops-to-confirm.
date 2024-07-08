@@ -2,14 +2,14 @@
 # Ignore SC2154 for shellcheck
 
 # Install Nginx
-apt-get update
-apt-get install -y nginx
+sudo apt-get update
+sudo apt-get install -y nginx
 
 # Get the hostname
 HOSTNAME=$(hostname)
 
 # Add custom HTTP header to Nginx configuration
-sed -i "/http {/a \\    add_header X-Served-By $HOSTNAME;" /etc/nginx/nginx.conf
+sudo sed -i "/http {/a \\    add_header X-Served-By $HOSTNAME;" /etc/nginx/nginx.conf
 
 # Restart Nginx to apply changes
-systemctl restart nginx
+sudo systemctl restart nginx
