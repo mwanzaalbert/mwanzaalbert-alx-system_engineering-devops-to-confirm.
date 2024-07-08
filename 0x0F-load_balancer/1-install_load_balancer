@@ -45,5 +45,4 @@ backend http_back
 EOL
 
 # Enable and start HAProxy
-sudo systemctl enable haproxy
 sudo service haproxy start
