@@ -45,4 +45,4 @@ backend http_back
 EOL
 
 # Enable and start HAProxy
-sudo service haproxy start
+sudo service haproxy restart
