@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Ignore SC2154 for shellcheck
 
 # Install Nginx
