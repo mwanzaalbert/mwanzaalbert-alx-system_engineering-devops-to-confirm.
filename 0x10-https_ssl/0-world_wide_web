@@ -15,7 +15,7 @@ function query_subdomain {
     else
         # Extract IP address and record type from dig output using awk
         ip_address=$(echo "$dig_output" | awk 'NR==1 {print $1}')
-        record_type=$(echo "$dig_output" | awk 'NR==1 {print $4}')
+        record_type=$(echo "$dig_output" | awk 'NR==1 {print $2}')
         
         # Check if IP address is empty (no A record found)
         if [ -z "$ip_address" ]; then
