@@ -1,25 +1,23 @@
 #!/usr/bin/env bash
-# Fix the nginx listening port
-# Step 1: Install Nginx if not already installed
+# Fix the nginx listening port and ensure it is running
+
+# Install Nginx if not already installed
 if ! command -v nginx &> /dev/null; then
     apt-get update
     apt-get install -y nginx
 fi
 
-# Step 2: Check if Nginx is running, and start it if not
+# Ensure Nginx is running
 if ! pgrep nginx &> /dev/null; then
     service nginx start
 fi
 
-# Step 3: Ensure Nginx is set to listen on port 80
+# Ensure Nginx is set to listen on port 80 for all active IPv4 IPs
 NGINX_CONF="/etc/nginx/sites-available/default"
-if ! grep -q "listen 80;" $NGINX_CONF; then
-    sed -i 's/listen 80 default_server;/listen 80;/g' $NGINX_CONF
-    sed -i 's/listen \[::\]:80 default_server;/listen [::]:80;/g' $NGINX_CONF
-    service nginx restart
-fi
+sed -i 's/listen 80 default_server;/listen 80;/g' $NGINX_CONF
+sed -i 's/listen \[::\]:80 default_server;/listen [::]:80;/g' $NGINX_CONF
 
-# Step 4: Ensure firewall rules allow port 80 traffic
+# Ensure firewall rules allow port 80 traffic
 if command -v ufw &> /dev/null; then
     ufw allow 80/tcp
 fi
