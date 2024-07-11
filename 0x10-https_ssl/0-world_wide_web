@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# This script audits subdomains for a given domain and displays their DNS records.
+
+domain=$1
+subdomain=$2
+
+# Function to query and display DNS information for a subdomain
+function query_subdomain {
+    sub=$1
+    # Query DNS record and capture the output
+    dig_output=$(dig +short "$sub.$domain")
+
+    if [ -z "$dig_output" ]; then
+        echo "The subdomain $sub does not exist."
+    else
+        # Extract IP address from dig output
+        ip_address=$(echo "$dig_output" | awk '{ print $1 }')
+        # Check if IP address is empty (no A record found)
+        if [ -z "$ip_address" ]; then
+            echo "The subdomain $sub does not have an A record."
+        else
+            echo "The subdomain $sub is an A record and points to $ip_address"
+        fi
+    fi
+}
+
+if [ -z "$domain" ]; then
+    echo "Error: Please provide a domain."
+    exit 1
+fi
+
+if [ -z "$subdomain" ]; then
+    # Query predefined subdomains if only domain is provided
+    for sub in www lb-01 web-01 web-02; do
+        query_subdomain "$sub"
+    done
+else
+    # Query specific subdomain if both domain and subdomain are provided
+    query_subdomain "$subdomain"
+fi
