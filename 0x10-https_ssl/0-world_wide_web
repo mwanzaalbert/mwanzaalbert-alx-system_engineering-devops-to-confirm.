@@ -13,13 +13,15 @@ function query_subdomain {
     if [ -z "$dig_output" ]; then
         echo "The subdomain $sub does not exist."
     else
-        # Extract IP address from dig output
-        ip_address=$(echo "$dig_output" | awk '{ print $1 }')
+        # Extract IP address and record type from dig output using awk
+        ip_address=$(echo "$dig_output" | awk 'NR==1 {print $1}')
+        record_type=$(echo "$dig_output" | awk 'NR==1 {print $4}')
+        
         # Check if IP address is empty (no A record found)
         if [ -z "$ip_address" ]; then
             echo "The subdomain $sub does not have an A record."
         else
-            echo "The subdomain $sub is an A record and points to $ip_address"
+            echo "The subdomain $sub is a $record_type record and points to $ip_address"
         fi
     fi
 }
