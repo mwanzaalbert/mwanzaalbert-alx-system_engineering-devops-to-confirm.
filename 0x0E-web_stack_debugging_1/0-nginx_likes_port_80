@@ -3,27 +3,17 @@
 
 # Install Nginx if not already installed
 if ! command -v nginx &> /dev/null; then
-    sudo apt-get update
-    sudo apt-get install -y nginx
+    apt-get update
+    apt-get install -y nginx
 fi
 
-# Ensure Nginx is running
-if ! pgrep nginx &> /dev/null; then
-    sudo service nginx start
-fi
-
-# Ensure Nginx is set to listen on port 80 for all active IPv4 IPs
+# Ensure Nginx is running and listening on port 80 for all active IPv4 IPs
 NGINX_CONF="/etc/nginx/sites-available/default"
-sudo sed -i 's/listen 80 default_server;/listen 80;/g' $NGINX_CONF
-sudo sed -i 's/listen \[::\]:80 default_server;/listen [::]:80;/g' $NGINX_CONF
+sed -i 's/listen 80 default_server;/listen 80;/g' $NGINX_CONF
+sed -i 's/listen \[::\]:80 default_server;/listen [::]:80;/g' $NGINX_CONF
 
-# Ensure firewall rules allow port 80 traffic
-if command -v ufw &> /dev/null; then
-    sudo ufw allow 80/tcp
-fi
+# Allow port 80 traffic through the firewall
+command -v ufw &> /dev/null && ufw allow 80/tcp
 
-# Restart Nginx to apply any changes
-sudo service nginx restart
-
-# Output status
-sudo service nginx status | grep "active (running)"
+# Restart Nginx to apply changes and check status
+service nginx restart && service nginx status | grep "active (running)"
