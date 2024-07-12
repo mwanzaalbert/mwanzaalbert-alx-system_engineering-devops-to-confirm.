@@ -4,11 +4,14 @@
 # Update package list and install Nginx
 apt-get update -y && apt-get install -y nginx
 
-# Create a default configuration file
+# Ensure Nginx is not running before configuring
+systemctl stop nginx
+
+# Set Nginx to listen on port 80
 cat <<EOF > /etc/nginx/sites-available/default
 server {
-    listen 80;
-    listen [::]:80;
+    listen 80 default_server;
+    listen [::]:80 default_server;
 
     root /var/www/html;
     index index.html;
@@ -19,9 +22,12 @@ server {
 }
 EOF
 
-# Check for syntax errors and reload Nginx
-nginx -t && systemctl restart nginx
+# Check for syntax errors
+nginx -t
 
-# Ensure Nginx is running
-systemctl enable nginx
+# Start and enable Nginx
 systemctl start nginx
+systemctl enable nginx
+
+# Verify that Nginx is running
+systemctl status nginx
