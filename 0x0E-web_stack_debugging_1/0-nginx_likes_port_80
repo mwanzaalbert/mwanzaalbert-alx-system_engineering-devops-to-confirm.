@@ -7,8 +7,10 @@ sudo apt-get install -y nginx
 
 # Ensure Nginx is configured to listen on port 80
 NGINX_CONF="/etc/nginx/sites-available/default"
-if ! grep -q "listen 80" "$NGINX_CONF"; then
+if ! grep -q "listen 80 default_server;" "$NGINX_CONF"; then
   sudo sed -i 's/listen [0-9]* default_server;/listen 80 default_server;/g' "$NGINX_CONF"
+fi
+if ! grep -q "listen [::]:80 default_server;" "$NGINX_CONF"; then
   sudo sed -i 's/listen \[::\]:[0-9]* default_server;/listen [::]:80 default_server;/g' "$NGINX_CONF"
 fi
 
@@ -46,10 +48,13 @@ sudo service nginx start
 # Restart Nginx to apply changes
 sudo service nginx restart
 
+# Wait for a few seconds to ensure Nginx has started
+sleep 5
+
 # Verify Nginx is returning HTTP 200 on port 80
-STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost:80)
+STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:80)
 if [ "$STATUS_CODE" -eq 200 ]; then
   echo "Nginx is successfully configured to return HTTP 200 on port 80."
 else
-  echo "Nginx is not returning HTTP 200. Please check the configuration."
+  echo "Nginx is not returning HTTP 200. Status code: $STATUS_CODE"
 fi
