@@ -1,17 +1,8 @@
 #!/usr/bin/env bash
-# Fix the nginx listening port and ensure it is running
+# fix Ubuntu container's to listen on port 80
 
-# Install Nginx if not already installed
-sudo apt-get update
-sudo apt-get install -y nginx
+new="80 default_server"
+old="8080 default_server"
+sed -i "s/$old/$new/" /etc/nginx/sites-enabled/default
 
-# Ensure Nginx is running and listening on port 80 for all active IPv4 IPs
-NGINX_CONF="/etc/nginx/sites-available/default"
-sudo sed -i 's/listen 80 default_server;/listen 80;/g' $NGINX_CONF
-sudo sed -i 's/listen \[::\]:80 default_server;/listen [::]:80;/g' $NGINX_CONF
-
-# Allow port 80 traffic through the firewall
-sudo command -v ufw &> /dev/null && ufw allow 80/tcp
-
-# Restart Nginx to apply changes and check status
-sudo service nginx restart && service nginx status | grep "active (running)"
+service nginx restart
