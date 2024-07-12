@@ -1,14 +1,27 @@
 #!/usr/bin/env bash
-# Fix Ubuntu container's Nginx to listen on port 80
+# This script installs and configures Nginx to listen on port 80.
 
-new="listen 80 default_server;"
-old="listen 8080 default_server;"
-sed -i "s/$old/$new/" /etc/nginx/sites-enabled/default
+# Update package list and install Nginx
+apt-get update -y && apt-get install -y nginx
 
-# Check if the configuration is valid before restarting Nginx
-nginx -t
-if [ $? -eq 0 ]; then
-    service nginx restart
-else
-    echo "Nginx configuration is invalid. Aborting restart."
-fi
+# Create a default configuration file
+cat <<EOF > /etc/nginx/sites-available/default
+server {
+    listen 80;
+    listen [::]:80;
+
+    root /var/www/html;
+    index index.html;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}
+EOF
+
+# Check for syntax errors and reload Nginx
+nginx -t && systemctl restart nginx
+
+# Ensure Nginx is running
+systemctl enable nginx
+systemctl start nginx
