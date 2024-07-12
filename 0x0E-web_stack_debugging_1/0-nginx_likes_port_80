@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# This script installs and configures Nginx to listen on port 80.
+# This script installs and configures Nginx to listen on port 80 and ensures it returns HTTP 200.
 
 # Update package list and install Nginx
 sudo apt-get update -y
@@ -38,10 +38,18 @@ Commercial support is available at
 
 <p><em>Thank you for using nginx.</em></p>
 </body>
-</html>' | sudo tee /var/www/html/index.nginx-debian.html
+</html>' | sudo tee /var/www/html/index.html
 
 # Start Nginx service
 sudo service nginx start
 
 # Restart Nginx to apply changes
 sudo service nginx restart
+
+# Verify Nginx is returning HTTP 200 on port 80
+STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost:80)
+if [ "$STATUS_CODE" -eq 200 ]; then
+  echo "Nginx is successfully configured to return HTTP 200 on port 80."
+else
+  echo "Nginx is not returning HTTP 200. Please check the configuration."
+fi
