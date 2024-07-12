@@ -5,4 +5,11 @@
 sudo apt-get update -y
 sudo apt-get install -y nginx
 
+# Create a simple HTML file to serve
+echo '<html>
+  <head><title>Welcome to Nginx</title></head>
+  <body><h1>Success! The Nginx web server is installed and working.</h1></body>
+</html>' | sudo tee /var/www/html/index.nginx-debian.html
+
+# Start Nginx service
 sudo service nginx start
