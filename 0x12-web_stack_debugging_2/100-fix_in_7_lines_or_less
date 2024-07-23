@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Configures Nginx to run as the nginx user and listen on port 8080.
 sudo useradd -r -s /sbin/nologin nginx || true
-sudo sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
-sudo sed -i 's/listen 80 default_server;/listen 8080 default_server;/' /etc/nginx/sites-available/default
-sudo sed -i 's/listen \[::\]:80 default_server;/listen \[::\]:8080 default_server;/' /etc/nginx/sites-available/default
+sudo sed -iE 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
+sudo sed -iE 's/listen 80 default_server;/listen 8080 default_server;/' /etc/nginx/sites-available/default
+sudo sed -iE 's/listen \[::\]:80 default_server;/listen \[::\]:8080 default_server;/' /etc/nginx/sites-available/default
 sudo service nginx restart
