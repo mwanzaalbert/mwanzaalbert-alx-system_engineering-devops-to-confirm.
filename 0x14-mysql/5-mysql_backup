@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# This script generates a MySQL dump of all databases, compresses it, and names the archive according to the day-month-year format.
+
+# Check if the password argument is provided
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 <MySQL root password>"
+  exit 1
+fi
+
+# Assign the password argument to a variable
+MYSQL_ROOT_PASSWORD=$1
+
+# Define the filename for the backup
+BACKUP_FILENAME="backup.sql"
+ARCHIVE_FILENAME="$(date +%d-%m-%Y).tar.gz"
+
+# Create a MySQL dump of all databases
+mysqldump -u root -p"$MYSQL_ROOT_PASSWORD" --all-databases > $BACKUP_FILENAME
+
+# Check if the dump was successful
+if [ $? -ne 0 ]; then
+  echo "MySQL dump failed."
+  exit 1
+fi
+
+# Compress the MySQL dump into a tar.gz archive
+tar -czvf $ARCHIVE_FILENAME $BACKUP_FILENAME
+
+# Check if the compression was successful
+if [ $? -ne 0 ]; then
+  echo "Compression failed."
+  exit 1
+fi
+
+# Remove the uncompressed MySQL dump file
+# rm $BACKUP_FILENAME
+
+# Print a success message
+echo "Backup successful: $ARCHIVE_FILENAME"
