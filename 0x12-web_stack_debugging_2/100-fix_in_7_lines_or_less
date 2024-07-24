@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Configures Nginx to run as the nginx user and listen on port 8080.
-useradd -r -s /sbin/nologin nginx || true
-sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
-sed -i 's/listen 80 default_server;/listen 8080 default_server;/' /etc/nginx/sites-available/default
-sed -i 's/listen \[::\]:80 default_server;/listen \[::\]:8080 default_server;/' /etc/nginx/sites-available/default
+# Configure Nginx to run as nginx user and listen on port 8080
+apt-get update
+apt-get install -y nginx
+sed -i 's/user www-data/user nginx/' /etc/nginx/nginx.conf
+sed -i 's/listen 80 /listen 8080 /' /etc/nginx/sites-available/default
+id -u nginx &>/dev/null || useradd -r -d /nonexistent -s /bin/false nginx
 service nginx restart
