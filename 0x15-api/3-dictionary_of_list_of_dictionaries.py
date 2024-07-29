@@ -1,32 +1,40 @@
-import requests
+#!/usr/bin/python3
+"""
+Fetches and exports all employees' TODO list progress to a JSON file.
+"""
 import json
+import requests
 
-def get_all_todos():
-    """Fetches TODO list data for all employees.
+def fetch_todo_list():
+    """Fetches todo list from the API and saves it to todo_all_employees.json."""
+    # API endpoints
+    users_url = "https://jsonplaceholder.typicode.com/users"
+    todos_url = "https://jsonplaceholder.typicode.com/todos"
 
-    Returns:
-        dict: A dictionary where keys are employee IDs and values are lists of tasks.
-    """
+    # Fetch users and todos data
+    users_response = requests.get(users_url)
+    todos_response = requests.get(todos_url)
 
-    all_todos = {}
-    for user_id in range(1, 11):  # Adjust the range based on the number of users
-        url = f"https://jsonplaceholder.typicode.com/todos?userId={user_id}"
-        response = requests.get(url)
-        data = response.json()
-        all_todos[str(user_id)] = [{"username": todo.get("title"), "task": todo["title"], "completed": todo["completed"]} for todo in data]
-    return all_todos
+    users = users_response.json()
+    todos = todos_response.json()
 
-def export_to_json(data):
-    """Exports the data to a JSON file.
+    # Prepare data for JSON output
+    todo_dict = {}
+    for user in users:
+        user_id = user['id']
+        username = user['username']
+        user_todos = [todo for todo in todos if todo['userId'] == user_id]
+        todo_dict[user_id] = [
+            {
+                "username": username,
+                "task": todo['title'],
+                "completed": todo['completed']
+            } for todo in user_todos
+        ]
 
-    Args:
-        data (dict): The data to be exported.
-    """
-
-    with open("todo_all_employees.json", "w") as jsonfile:
-        json.dump(data, jsonfile, indent=4)
+    # Write data to JSON file
+    with open('todo_all_employees.json', 'w') as json_file:
+        json.dump(todo_dict, json_file)
 
 if __name__ == "__main__":
-    all_todos_data = get_all_todos()
-    export_to_json(all_todos_data)
-    print("Data exported to todo_all_employees.json")
+    fetch_todo_list()
