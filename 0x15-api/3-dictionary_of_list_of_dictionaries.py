@@ -1,12 +1,11 @@
 #!/usr/bin/python3
-"""
-Fetches and exports all employees' TODO list progress to a JSON file.
-"""
+"""Fetches and exports all employees' TODO list progress to a JSON file."""
 import json
 import requests
 
+
 def fetch_todo_list():
-    """Fetches todo list from the API and saves it to todo_all_employees.json."""
+    """Fetch todo list from the API and saves it to todo_all_employees.json."""
     # API endpoints
     users_url = "https://jsonplaceholder.typicode.com/users"
     todos_url = "https://jsonplaceholder.typicode.com/todos"
@@ -35,6 +34,7 @@ def fetch_todo_list():
     # Write data to JSON file
     with open('todo_all_employees.json', 'w') as json_file:
         json.dump(todo_dict, json_file)
+
 
 if __name__ == "__main__":
     fetch_todo_list()
