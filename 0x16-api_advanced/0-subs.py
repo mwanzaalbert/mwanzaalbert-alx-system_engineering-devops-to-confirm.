@@ -24,6 +24,7 @@ def number_of_subscribers(subreddit):
         return 0
 
 
-# Example usage:
-# print(number_of_subscribers('programming'))  # Should print total subscribers
-# print(number_of_subscribers('this_is_a_fake_subreddit'))  # Should print 0
+if __name__ == "__main__":
+    """Example Usage."""
+    print(number_of_subscribers('programming'))  # Should print all subscribers
+    print(number_of_subscribers('this_is_a_fake_subreddit'))  # Should print 0

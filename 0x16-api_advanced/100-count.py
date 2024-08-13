@@ -1,6 +1,10 @@
+#!/usr/bin/python3
+"""Demonstration of Reddit apis."""
 import requests
 
+
 def count_words(subreddit, word_list, after=None, word_count=None):
+    """Words counter."""
     if word_count is None:
         # Initialize a dictionary to keep track of word counts
         word_count = {word.lower(): 0 for word in word_list}
@@ -12,7 +16,8 @@ def count_words(subreddit, word_list, after=None, word_count=None):
     params = {'after': after} if after else {}
 
     # Make a GET request to the Reddit API
-    response = requests.get(url, headers=headers, params=params, allow_redirects=False)
+    response = requests.get(url, headers=headers, params=params,
+                            allow_redirects=False)
 
     # Check if the request was successful and not redirected
     if response.status_code == 200:
@@ -36,7 +41,8 @@ def count_words(subreddit, word_list, after=None, word_count=None):
             return count_words(subreddit, word_list, after, word_count)
         else:
             # Sort and print the word count
-            sorted_words = sorted(word_count.items(), key=lambda item: (-item[1], item[0]))
+            sorted_words = sorted(word_count.items(),
+                                  key=lambda item: (-item[1], item[0]))
             for word, count in sorted_words:
                 if count > 0:
                     print(f"{word}: {count}")
@@ -45,6 +51,9 @@ def count_words(subreddit, word_list, after=None, word_count=None):
         # If the subreddit is invalid or redirected, return nothing
         return
 
-# Example usage:
-# count_words('programming', ['react', 'python', 'java', 'javascript', 'scala', 'no_results_for_this_one'])
 
+if __name__ == "__main__":
+    # Example usage:
+    count_words('programming',
+                ['react', 'python', 'java', 'JaVa' 'javascript',
+                 'scala', 'no_results_for_this_one'])
