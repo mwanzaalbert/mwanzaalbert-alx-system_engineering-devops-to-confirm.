@@ -1,20 +1,6 @@
-# This Puppet manifest fixes permission issues for the WordPress PHP files
+# automated puppet fix (to find out why Apache is returning a 500 error)
 
-file { '/var/www/html/wp-settings.php':
-  ensure => file,
-  mode   => '0755',
-  owner  => 'www-data',
-  group  => 'www-data',
-}
-
-# Ensure the necessary PHP module is installed
-package { 'php5-mysql':
-  ensure => installed,
-}
-
-# Restart the Apache service to apply changes
-service { 'apache2':
-  ensure  => running,
-  enable  => true,
-  require => Package['php5-mysql'],
+exec { 'Fix wordpress site':
+  command  => 'sudo sed -i "s/.phpp/.php/" /var/www/html/wp-settings.php',
+  provider => shell,
 }
