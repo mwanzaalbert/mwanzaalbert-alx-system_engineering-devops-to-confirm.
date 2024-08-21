@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Script to gracefully reload Gunicorn without downtime
+
+# Send the HUP signal to gracefully reload Gunicorn
+pkill -HUP gunicorn
