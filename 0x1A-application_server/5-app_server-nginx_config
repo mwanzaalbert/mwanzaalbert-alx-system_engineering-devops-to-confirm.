@@ -7,10 +7,6 @@ server {
 
     server_name _;
 
-    location /2-hbnb/ {
-        proxy_pass http://127.0.0.1:5003;
-    }
-
     location /static/ {
         alias /home/ubuntu/AirBnB_clone_v4/web_dynamic/static/;
         try_files $uri $uri/ =404;
@@ -33,7 +29,7 @@ server {
     }
 
     location / {
-        try_files $uri $uri/ =404;
+        proxy_pass http://127.0.0.1:5003;
     }
 
     location /redirect_me {
