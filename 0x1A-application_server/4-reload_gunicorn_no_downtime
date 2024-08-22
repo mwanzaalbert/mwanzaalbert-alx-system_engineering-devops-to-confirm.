@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
 # Script to gracefully reload Gunicorn without downtime
-
 # Send the HUP signal to gracefully reload Gunicorn
-pkill -HUP gunicorn
+systemctl status gunicorn | grep -oE 'Main PID: [0-9]+' | cut -d ' ' -f3 | xargs kill -HUP
